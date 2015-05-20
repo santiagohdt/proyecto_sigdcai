@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><Graph __version="3.5.0" author="Logic Core I3" created="Mon May 18 18:19:55 COT 2015" description="List&lt;Map&gt; To CSV" guiVersion="3.4.4.P" id="1432010961078" licenseCode="Unlicensed" licenseType="Unknown" modified="Mon May 18 18:19:55 COT 2015" modifiedBy="Logic Core I3" name="List_Map__To_CSV_1" revision="1.0" showComponentDetails="false">
+<Global>
+<Metadata __index="0" __referenceCounter="1" __sourcePath="{}/Map" _dataStructure="SINGLE_DIMENSIONAL_COLLECTION" _id="__id" _type="Input" id="e6cbf549-eb2e-4136-996f-3b36229dd109">
+<Record fieldDelimiter="," name="Map" recordDelimiter="\n\\|\r\n\\|\r" type="delimited">
+<Field __artificialType="_id" __systemManaged="true" name="__id" type="string"/>
+<Field __implementationClass="java.lang.Object" __index="0" __sourcePath="{}/Map/name" containerType="SINGLE" label="name" name="name" type="string"/>
+<Field __implementationClass="java.lang.Integer" __index="1" __sourcePath="{}/Map/id" containerType="SINGLE" label="id" name="id" type="integer"/>
+</Record>
+</Metadata>
+<Metadata __referenceCounter="1" _dataStructure="SINGLE_DIMENSIONAL_COLLECTION" _type="Output" id="5c149973-19c7-43e7-a9dc-4823a995e544">
+<Record fieldDelimiter="," name="Map" recordDelimiter="\n\\|\r\n\\|\r" type="delimited">
+<Field containerType="SINGLE" eofAsDelimiter="true" label="name" name="name" size="10" type="string"/>
+<Field containerType="SINGLE" label="id" name="id" size="10" type="integer"/>
+<Field __artificialType="_id" name="__id" type="long"/>
+</Record>
+</Metadata>
+<Dictionary>
+<Entry id="DictionaryEntry0" input="true" name="inputPayload" output="false" type="object"/>
+<Entry id="DictionaryEntry1" input="false" name="outputPayload" output="true" type="object"/>
+</Dictionary>
+</Global>
+<Phase number="0">
+<Node enabled="enabled" fileURL="dict:inputPayload" guiName="Map&lt;k,v&gt; READER" guiX="20" guiY="20" id="BEAN_READER0" type="BEAN_READER">
+<attr name="mapping"><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Context outPort="0" sequenceField="__id" xpath=".">
+  <Mapping cloverField="name" trim="true" xpath="name"/>
+  <Mapping cloverField="id" trim="true" xpath="id"/>
+</Context>
+]]></attr>
+<attr name="__typeName"><![CDATA[select id,name from role;]]></attr>
+<attr name="_data_format"><![CDATA[MAP]]></attr>
+<attr name="__metadata"><![CDATA[true]]></attr>
+<attr name="__operationName"><![CDATA[http://www.mulesoft.org/schema/mule/db/select]]></attr>
+<attr name="__connectorName"><![CDATA[MySQL_Configuration1]]></attr>
+</Node>
+<Node charset="UTF-8" enabled="enabled" excludeFields="__id" fileURL="dict:outputPayload" guiName="CSV WRITER" guiX="900" guiY="20" id="DATA_WRITER0" quotedStrings="true" type="DATA_WRITER">
+<attr name="_data_format"><![CDATA[CSV]]></attr>
+</Node>
+<Node enabled="enabled" guiName="Foreach 'Map' -&gt; 'Map'" guiX="460" guiY="20" id="FOREACH_MAP_MAP" transformClass="com.mulesoft.datamapper.transform.MelRecordTransform" type="REFORMAT">
+<attr name="melScript"><![CDATA[//MEL
+//START -> DO NOT REMOVE
+output.__id = str2long(input.__id);
+//END -> DO NOT REMOVE
+output.name = input.name;
+output.id = num2str(input.id);
+]]></attr>
+</Node>
+<Edge debugMode="true" fromNode="BEAN_READER0:0" guiBendpoints="" id="Edge0" inPort="Port 0 (in)" metadata="e6cbf549-eb2e-4136-996f-3b36229dd109" outPort="Port 0 (out)" toNode="FOREACH_MAP_MAP:0"/>
+<Edge debugMode="true" fromNode="FOREACH_MAP_MAP:0" guiBendpoints="" id="Edge1" inPort="Port 0 (in)" metadata="5c149973-19c7-43e7-a9dc-4823a995e544" outPort="Port 0 (out)" toNode="DATA_WRITER0:0"/>
+</Phase>
+</Graph>

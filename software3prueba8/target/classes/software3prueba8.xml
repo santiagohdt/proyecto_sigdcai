@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.6.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+    <db:mysql-config name="MySQL_Configuration" host="localhost" port="3306" user="root" password="123456" database="mydb" doc:name="MySQL Configuration"/>
+    <data-mapper:config name="List_Map__To_CSV" transformationGraphPath="list_map__to_csv.grf" doc:name="List_Map__To_CSV"/>
+    <db:mysql-config name="MySQL_Configuration1" host="localhost" port="3306" user="root" password="123456" database="sicdb" doc:name="MySQL Configuration"/>
+    <data-mapper:config name="List_Map__To_CSV_1" transformationGraphPath="list_map__to_csv_1.grf" doc:name="List_Map__To_CSV_1"/>
+    <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8081" doc:name="HTTP Listener Configuration"/>
+    <flow name="software3prueba8Flow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/" doc:name="HTTP"/>
+        <choice tracking:enable-default-events="true" doc:name="Choice">
+            <when expression="payload.contains(&quot;mydb&quot;)">
+                <db:select config-ref="MySQL_Configuration" doc:name="databaseMydb">
+                    <db:parameterized-query><![CDATA[select * from estudiante;]]></db:parameterized-query>
+                </db:select>
+                <data-mapper:transform config-ref="List_Map__To_CSV" doc:name="List&lt;Map&gt; To CSV"/>
+                <file:outbound-endpoint path="C:\Users\Logic Core I3\Desktop\IS3\reporte consultas\reporteConsulta_mydb" responseTimeout="10000" doc:name="File"/>
+            </when>
+            <otherwise>
+                <db:select config-ref="MySQL_Configuration1" doc:name="DatabaseSicdb">
+                    <db:parameterized-query><![CDATA[select id,name from role;]]></db:parameterized-query>
+                </db:select>
+                <data-mapper:transform config-ref="List_Map__To_CSV_1" doc:name="List&lt;Map&gt; To CSV"/>
+                <file:outbound-endpoint path="C:\Users\Logic Core I3\Desktop\IS3\reporte consultas\reporteConsultas_sicdb" responseTimeout="10000" doc:name="File"/>
+            </otherwise>
+        </choice>
+    </flow>
+</mule>
